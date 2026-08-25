@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>新生懶人包 | Freshman Guide</title>
+<meta name="description" content="實踐大學新生懶人包一鍵複製工具：入學日程、就學減免、學生信箱、健康檢查、體育課、英文課程、校園地圖。">
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --ink:#1b1f24;
+    --muted:#5f6b7a;
+    --line:#e3e7ec;
+    --brand:#2f7d5d;
+    --brand-ink:#ffffff;
+    --brand-soft:#e8f3ee;
+    --code-bg:#fafbfc;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12161b;
+      --card:#1a1f26;
+      --ink:#e8ecf1;
+      --muted:#9aa7b5;
+      --line:#2a323c;
+      --brand:#4fae82;
+      --brand-ink:#0d1216;
+      --brand-soft:#1e2c26;
+      --code-bg:#151a20;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+    line-height:1.65;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:28px 16px 64px}
+  header.top{padding:24px 0 8px}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 8px}
+  .chipnav{
+    border:1px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:999px;padding:6px 13px;font-size:14px;text-decoration:none;
+    box-shadow:var(--shadow);
+  }
+  .chipnav:hover{border-color:var(--brand);color:var(--brand)}
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    margin:16px 0;
+    overflow:hidden;
+    scroll-margin-top:12px;
+  }
+  .card-head{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 16px;border-bottom:1px solid var(--line);
+    flex-wrap:wrap;
+  }
+  .badge{
+    flex:none;width:30px;height:30px;border-radius:9px;
+    background:var(--brand);color:var(--brand-ink);
+    display:grid;place-items:center;font-weight:700;font-size:15px;
+  }
+  .badge.wide{width:auto;padding:0 10px;font-size:13px}
+  .card-title{font-size:16px;font-weight:700;margin:0;flex:1 1 160px;min-width:0}
+  .btn{
+    border:0;border-radius:9px;padding:8px 14px;font-size:14px;font-weight:600;
+    background:var(--brand);color:var(--brand-ink);cursor:pointer;
+    font-family:inherit;transition:transform .08s ease,opacity .15s ease;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn.done{background:#1f9254}
+  .body{padding:14px 16px 16px}
+  pre.content{
+    margin:0;
+    background:var(--code-bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px;
+    white-space:pre-wrap;
+    word-break:break-word;
+    font-family:inherit;
+    font-size:14.5px;
+    max-height:260px;
+    overflow:hidden;
+    transition:max-height .2s ease;
+  }
+  pre.content.open{max-height:none}
+  .fade{
+    height:44px;margin-top:-44px;position:relative;pointer-events:none;
+    background:linear-gradient(to bottom,transparent,var(--card));
+  }
+  pre.content.open + .fade{display:none}
+  .more{
+    margin-top:8px;background:none;border:0;color:var(--brand);
+    font-size:14px;font-weight:600;cursor:pointer;padding:4px 0;font-family:inherit;
+  }
+  .files{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+  .file{
+    display:flex;align-items:center;gap:12px;
+    border:1px solid var(--line);border-radius:10px;padding:10px;
+    background:var(--code-bg);
+  }
+  .file img{width:56px;height:56px;object-fit:cover;border-radius:7px;border:1px solid var(--line);flex:none;background:#fff}
+  .file .fname{flex:1;font-size:14px;min-width:0;word-break:break-all}
+  .file a{
+    flex:none;text-decoration:none;font-size:14px;font-weight:600;
+    background:var(--brand-soft);color:var(--brand);
+    border:1px solid var(--line);border-radius:9px;padding:8px 12px;
+  }
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+    background:#1f9254;color:#fff;padding:10px 20px;border-radius:999px;
+    font-size:14px;font-weight:600;opacity:0;pointer-events:none;
+    transition:opacity .2s ease,transform .2s ease;z-index:99;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:32px}
+  @media (max-width:520px){
+    h1{font-size:22px}
+    .card-title{font-size:15px}
+    pre.content{font-size:14px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>新生懶人包 | Freshman Guide</h1>
+  <p class="sub">點一下就複製，貼到聊天室直接用。共 8 組內容。</p>
+  <nav class="toolbar">
+    <a class="chipnav" href="#item-main">主選單</a>
+    <a class="chipnav" href="#item-A">A 日程</a>
+    <a class="chipnav" href="#item-B">B 減免</a>
+    <a class="chipnav" href="#item-C">C 信箱</a>
+    <a class="chipnav" href="#item-D">D 健檢</a>
+    <a class="chipnav" href="#item-E">E 體育</a>
+    <a class="chipnav" href="#item-F">F 英文</a>
+    <a class="chipnav" href="#item-G">G 地圖</a>
+  </nav>
+</header>
+
+<section class="card" id="item-main">
+  <div class="card-head">
+    <span class="badge wide">主選單</span>
+    <h2 class="card-title">新生懶人包｜歡迎詞與代號選單</h2>
+    <button class="btn" data-copy="c-main">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-main">🎉 哈囉！歡迎加入蔬食廚房！
+
+即將成為大一新生的你，是不是對大學生活充滿期待，卻又有點不知從何準備起呢？別擔心，你的專屬「新生生存指南」上線啦！
+
+為了不讓你眼花撩亂，請直接回覆你最想了解的資訊【英文代號】（例如輸入 A），小助手會立刻把重點整理給你喔！👇
+
+A 👉 115學年度 新生入學準備與重要日程
+
+B 👉 就學優待減免與學貸申請
+
+C 👉 學生信箱與校園資訊系統開通
+
+D 👉 10/3 (六) 新生健康檢查注意事項
+
+E  👉 體育課登記
+
+F  👉 115年度英文課程的規定
+
+G 👉 實踐大學地圖探索</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-A">
+  <div class="card-head">
+    <span class="badge">A</span>
+    <h2 class="card-title">115學年度 新生入學準備與重要日程</h2>
+    <button class="btn" data-copy="c-A">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-A">📅 115學年度 新生入學準備與重要日程
+
+一、 8月：帳號開通、資料填報與各項申請
+
+8/1 - 9/3：辦理就學優待減免（請至校務系統登記，並掛號郵寄或親送資料至學校生輔組）。
+
+8/1 - 9/7：辦理就學貸款（需進行銀行對保、校務系統登記，並掛號郵寄或親送至學校）。
+
+8/3 - 8/31：上網填報學籍資料（未依時程完成或資料不齊者，將無法準時領取學生證）。
+
+8/22、8/23：新生說明會（自由參加）。
+通常以大學部為主。
+
+8/4-8/31 前：學分抵免申請（上限最多抵免6學分）。
+
+二、 9月：開學、宿舍入住、始業輔導與選課
+9/5 - 9/15：宿舍開放（9/5 正式開放入住）。
+
+9月初起：校務系統與教學平台綁定（包括 Tronclass 教學平台及 Teams 帳號綁定）。
+
+
+9/11 - 9/18：第二階段網路選課（開放時間為每日 09:30 - 22:59，請登入校務系統選課）。
+
+9/14：開學註冊日（正式開始上課）。
+
+9/14 - 10/7（或 10/9）：弱勢助學金申請。</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-B">
+  <div class="card-head">
+    <span class="badge">B</span>
+    <h2 class="card-title">就學優待減免與學貸申請</h2>
+    <button class="btn" data-copy="c-B">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-B">【生輔一組公告】
+
+115學年度第1學期就學優待減免—開始申請
+
+辦理期間：8月1日(六)至9月3日(四)
+
+👉 實踐大學臺北校區就學優待減免收件至115年9月3日(四)
+
+1. 校務行政系統左欄 -【 減免申請表 】填寫相關資料
+
+2.列印【減免申請表】並簽名後與應繳交資料，可郵寄掛號(請使用就貸減免寄件封面)或親送至G棟1F學務處生輔組。
+
+3.承辦單位:生輔一組(G 棟 1 樓)服務電話:02-25381111 分機 3116(減免)吳老師 / 3111(就貸)顏老師
+
+👉實踐大學網頁
+https://www.usc.edu.tw/
+
+👉校務行政系統
+https://ap.usc.edu.tw/sso/Login.aspx
+
+👉實踐大學生活輔導一組
+https://students.usc.edu.tw/
+
+▲資料繳交途徑有以下方式:
+
+1、現場繳件→至生輔一組繳交資料(請注意學校辦公時間,以免無法協助收件)
+
+2、掛號郵寄→以郵戳為憑,寄至 104336臺北市中山區大直街 70 號 實踐大學學務處生輔一組(可使用
+本組特製封面+A4 大小信封,如附件)</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-C">
+  <div class="card-head">
+    <span class="badge">C</span>
+    <h2 class="card-title">學生信箱與校園資訊系統開通</h2>
+    <button class="btn" data-copy="c-C">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-C">學生信箱
+
+帳號/Account:
+
+學號@gm2.usc.edu.tw
+例如：j115950301@gm1.usc.edu.tw
+
+密碼/Password：
+
+預設密碼：出生西元年月日，共 8 碼。例如民國 87 年 1 月 1 日出生，即為 19980101</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-D">
+  <div class="card-head">
+    <span class="badge">D</span>
+    <h2 class="card-title">10/3 (六) 新生健康檢查注意事項</h2>
+    <button class="btn" data-copy="c-D">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-D">10/3(六)新生健康檢查
+
+上午8點開始，大約30-40分鐘，提早到的同學可以先去喔！
+
+健檢重要須知： 健檢資料卡：受檢前先行上網，填寫「基本資料」。
+http://physical.com.tw/survey/sco.php)
+
+
+ 如115年6月起至115年9月已做過符合本校健康檢查項目，可以將健檢報告，以下3種方式，在10/31前，則一繳交：
+
+(1)可以親送至衛保組：G動1樓。
+
+(2)可以郵寄至：
+
+104336臺北市中山區大直街70號
+劉采枰護理師
+(02)2538-1111 分機3313
+
+(3)掃描成pdf檔，e-mail
+tasiping@g2.usc.edu.tw</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-E">
+  <div class="card-head">
+    <span class="badge">E</span>
+    <h2 class="card-title">體育課登記</h2>
+    <button class="btn" data-copy="c-E">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-E">8/26 10:00～8/27  15：59 體育課選課（登入校務系統選課，未選課將自動分發）</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+  </div>
+</section>
+
+<section class="card" id="item-F">
+  <div class="card-head">
+    <span class="badge">F</span>
+    <h2 class="card-title">115年度英文課程的規定</h2>
+    <button class="btn" data-copy="c-F">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-F">【115學年度實踐新生必看】輕鬆通關的英文學分攻略！
+
+準備踏入實踐大學的你，還在對「英語文課程」規定一頭霧水嗎？這篇教學把三份複雜法規化繁為簡，3招帶你輕鬆搞定必備的8學分！
+
+📍第一招：6選4自由配，不擋修超彈性
+學校推出職場、商務溝通等6門素養課。你只需在校期間「任選4門」修畢（共8學分）。最佛心的是完全「不設擋修機制」，可以隨心所欲彈性安排課表，不怕進度卡關！
+
+📍第二招：證照開外掛，免修有撇步
+手邊有英檢成績千萬別浪費！只要達CEFR B1以上（如：多益聽讀皆達275分以上、全民英檢中級初試通過），即可在「開學第一週」申請免修！
+⚠️避坑注意：證照效期最多4年。免修不等於免學分，仍須選修「通識外語、進階英文或系上全英課程」補足這8學分喔！
+
+📍第三招：專業抵換與神救援
+若系上有開立經審查的「專業英文課」，修畢也能抵換。萬一上課吃力，老師會安排語言中心「免費線上輔導」，不只補救基礎，成績還能算進學期總分，是超強拉分神器！
+
+快翻出你的英檢成績，把握開學第一週的黃金申請期，提前為自己規劃好最適合的通關路線吧！</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+    <div class="files">
+      <div class="file">
+        <img src="images/eng-rule.jpg" alt="實踐大學英語文課程修課辦法">
+        <span class="fname">實踐大學英語文課程修課辦法.jpg</span>
+        <a href="images/eng-rule.jpg" download="實踐大學英語文課程修課辦法.jpg">下載</a>
+      </div>
+      <div class="file">
+        <img src="images/eng-exempt-p1.jpg" alt="英語文課程免修實施細則 第1頁">
+        <span class="fname">英語文課程免修實施細則_p1.jpg</span>
+        <a href="images/eng-exempt-p1.jpg" download="實踐大學英語文課程免修實施細則_p1.jpg">下載</a>
+      </div>
+      <div class="file">
+        <img src="images/eng-exempt-p2.jpg" alt="英語文課程免修實施細則 第2頁">
+        <span class="fname">英語文課程免修實施細則_p2.jpg</span>
+        <a href="images/eng-exempt-p2.jpg" download="實踐大學英語文課程免修實施細則_p2.jpg">下載</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="item-G">
+  <div class="card-head">
+    <span class="badge">G</span>
+    <h2 class="card-title">實踐大學地圖探索</h2>
+    <button class="btn" data-copy="c-G">複製</button>
+  </div>
+  <div class="body">
+    <pre class="content" id="c-G">這張實踐大學臺北校區平面圖是你探索校園的最佳導航！
+
+地圖以清晰的色彩與標籤，精準定位各大樓、學院系辦（如設計學院、管理學院）及核心行政單位。無論是新生尋找「註冊課務組」辦理證件、去「收發室」領取包裹，還是確認各系所與專業教室的所在樓層，都能一目了然。
+
+此外，圖中更貼心標示了圖書館、體育館、網球場等硬體設施，以及學生餐廳、7-11與星巴克等生活機能據點。一圖在手，讓你輕鬆穿梭大直校園，上課、辦事絕不迷路！</pre>
+    <div class="fade"></div>
+    <button class="more">展開全部 ▾</button>
+    <div class="files">
+      <div class="file">
+        <img src="images/campus-map.png" alt="實踐大學臺北校區校園平面圖">
+        <span class="fname">實踐大學臺北校區校園平面圖.png</span>
+        <a href="images/campus-map.png" download="實踐大學臺北校區校園平面圖.png">下載</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>實踐大學新生懶人包 · 一鍵複製</footer>
+</div>
+
+<div class="toast" id="toast">已複製 ✓</div>
+
+<script>
+(function(){
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+  }
+
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '0';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    ta.setSelectionRange(0, ta.value.length);
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function markDone(btn){
+    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+    btn.textContent = '已複製 ✓';
+    btn.classList.add('done');
+    clearTimeout(btn._t);
+    btn._t = setTimeout(function(){
+      btn.textContent = btn.dataset.label;
+      btn.classList.remove('done');
+    }, 1600);
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var el = document.getElementById(btn.getAttribute('data-copy'));
+      if (!el) return;
+      var text = el.textContent;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function(){
+          markDone(btn); showToast('已複製 ✓');
+        }, function(){
+          if (fallbackCopy(text)) { markDone(btn); showToast('已複製 ✓'); }
+          else { showToast('複製失敗，請長按手動選取'); }
+        });
+      } else {
+        if (fallbackCopy(text)) { markDone(btn); showToast('已複製 ✓'); }
+        else { showToast('複製失敗，請長按手動選取'); }
+      }
+    });
+  });
+
+  document.querySelectorAll('.more').forEach(function(btn){
+    var body = btn.parentElement;
+    var pre = body.querySelector('pre.content');
+    var fade = body.querySelector('.fade');
+    if (!pre) return;
+    if (pre.scrollHeight <= pre.clientHeight + 4) {
+      btn.style.display = 'none';
+      if (fade) fade.style.display = 'none';
+      return;
+    }
+    btn.addEventListener('click', function(){
+      var open = pre.classList.toggle('open');
+      btn.textContent = open ? '收合 ▴' : '展開全部 ▾';
+    });
+  });
+})();
+</script>
+</body>
+</html>
